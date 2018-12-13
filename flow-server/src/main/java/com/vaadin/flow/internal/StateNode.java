@@ -57,7 +57,7 @@ import com.vaadin.flow.shared.Registration;
  * @author Vaadin Ltd
  * @since 1.0
  */
-public class StateNode implements Serializable {
+public class  StateNode implements Serializable {
     private static class FeatureSetKey implements Serializable {
         private final Set<Class<? extends NodeFeature>> reportedFeatures;
         private final Set<Class<? extends NodeFeature>> nonReportableFeatures;

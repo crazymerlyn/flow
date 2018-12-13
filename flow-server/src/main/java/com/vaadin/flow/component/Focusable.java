@@ -15,6 +15,12 @@
  */
 package com.vaadin.flow.component;
 
+import com.vaadin.flow.dom.DomListenerRegistration;
+import com.vaadin.flow.shared.Registration;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * Interface with the methods implemented by components that can gain and lose
  * focus.
@@ -124,4 +130,35 @@ public interface Focusable<T extends Component>
         getElement().callFunction("blur");
     }
 
+//    default Registration addShortcutListener(Key keySequence, boolean preventDefault, boolean stopPropagation, ComponentEventListener<KeyPressEvent> listener) {
+    default Registration addShortcutListener(ComponentEventListener<KeyPressEvent> listener, boolean preventDefault, boolean stopPropagation, char key, Key... modifiers) {
+
+        String modifierFilter = Arrays.stream(modifiers)
+                .map(modifier -> "event.getModifierState('" + modifier.getKeys().get(0) + "')")
+                .collect(Collectors.joining(" && "));
+
+
+//        ComponentUtil.addListener(this, KeyPressEvent.class, listener, domListenerRegistration -> {
+//
+//        });
+
+        String filter = "event.key === '" + key + "'" +
+                " && " + (modifierFilter.isEmpty() ? "true" : modifierFilter);
+
+        DomListenerRegistration registration = getElement().addEventListener("keydown", event -> {
+
+            System.out.println(event.getEventData().toJson());
+
+//            listener.onComponentEvent(new KeyPressEvent());
+        }).setFilter(filter);
+
+        if (preventDefault) {
+            registration.addEventData("event.preventDefault()");
+        }
+        if (stopPropagation) {
+            registration.addEventData("event.stopPropagation()");
+        }
+
+        return () -> registration.remove();
+    }
 }
