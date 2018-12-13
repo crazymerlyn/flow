@@ -18,10 +18,11 @@ public class KeyboardShortcutsUI extends UI {
 
         Input input = new Input();
 
-        FocusableDiv parent = new FocusableDiv();
+        Div parent = new Div();
+//        FocusableDiv parent = new FocusableDiv();
         parent.setWidth("50%");
         parent.setHeight("50%");
-//        parent.setTabIndex(0);
+//        parent.setTabIndex(-1);
 //        parent.getElement().setAttribute("style", "background-color: lightblue; ");
 
         parent.add(input);
@@ -29,26 +30,9 @@ public class KeyboardShortcutsUI extends UI {
 
         add(parent);
 
-//        input.getElement().addEventListener("keydown", event -> {
-//            label.setText(event.getEventData().toJson());
-//        }).setFilter("event.key == 'f' && event.getModifierState('Meta')").addEventData("event.preventDefault()");
-
-//        this.getElement().addEventListener("keydown", event -> {
-//            label.setText(event.getEventData().toJson());
-//        }).setFilter("event.key == 'U'");
-//
-//        label.getElement().addEventListener("keydown", event -> {
-//            label.setText(event.getEventData().toJson());
-//        }).setFilter("event.key == 'L'");
-//
-//        Registration registration = ComponentUtil.addListener(input, KeyPressEvent.class, event -> {
-//            label.setText(event.getKey().toString() + ", " + event.getModifiers());
-//        });
-
-        parent.addShortcutListener(event -> {
+        ComponentUtil.addShortcutListener(parent, KeyShortcut.of('F', KeyModifier.META), true, false, event -> {
             label.setText(event.getKey().toString() + ", " + event.getModifiers());
-        }, true, false, 'f', Key.META);
-
+        });
 
     }
 }

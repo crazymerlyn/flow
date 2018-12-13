@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * An interface to represent keyboard keys.
@@ -1784,13 +1784,6 @@ public interface Key extends Serializable {
         return () -> keys;
     }
 
-    static Key of(char key, Key... additionalKeys) {
-
-        String[] keys = (String[]) Arrays.stream(additionalKeys).map(additionalKey -> additionalKey.getKeys().get(0)).toArray();
-
-        return Key.of("" + key, keys);
-    }
-
     /**
      * Returns the list (with at least one element) of printable representations
      * of the key, which should reflect the <code>key</code> property in the
@@ -1813,6 +1806,18 @@ public interface Key extends Serializable {
      */
     default boolean matches(String key) {
         return getKeys().contains(key);
+    }
+
+    /**
+     * Returns whether the specified key is a modifier or not.
+     *
+     * @see KeyModifier
+     *
+     * @param key   a {@link Key} instance.
+     * @return  true if the key argument is a modifier, otherwise false.
+     */
+    static boolean isModifier(Key key) {
+        return Stream.of(KeyModifier.values()).filter(k -> k.matches(key.getKeys().get(0))).findFirst().isPresent();
     }
 
 }

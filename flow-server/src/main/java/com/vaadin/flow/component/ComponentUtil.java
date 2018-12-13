@@ -31,6 +31,7 @@ import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.internal.ComponentMetaData;
 import com.vaadin.flow.component.internal.ComponentMetaData.DependencyInfo;
 import com.vaadin.flow.component.internal.ComponentMetaData.SynchronizedPropertyInfo;
+import com.vaadin.flow.component.internal.KeyboardEvent;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomListenerRegistration;
@@ -371,6 +372,22 @@ public class ComponentUtil {
             Consumer<DomListenerRegistration> domListenerConsumer) {
         return component.getEventBus().addListener(eventType, listener,
                 domListenerConsumer);
+    }
+
+    public static Registration addShortcutListener(Component component, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, ComponentEventListener<KeyboardEvent> listener) {
+
+        Registration registration = ComponentUtil.addListener(component, KeyDownEvent.class, event -> { listener.onComponentEvent(event); }, domListenerRegistration -> {
+            domListenerRegistration.setFilter(shortcut.filterText());
+
+            if (preventDefault) {
+                domListenerRegistration.addEventData("event.preventDefault()");
+            }
+            if (stopPropagation) {
+                domListenerRegistration.addEventData("event.stopPropagation()");
+            }
+        });
+
+        return registration;
     }
 
     /**
