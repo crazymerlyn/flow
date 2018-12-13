@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * An interface to represent keyboard keys.
@@ -1781,6 +1782,13 @@ public interface Key extends Serializable {
         keys.add(key);
         keys.addAll(Arrays.asList(additionalKeys));
         return () -> keys;
+    }
+
+    static Key of(char key, Key... additionalKeys) {
+
+        String[] keys = (String[]) Arrays.stream(additionalKeys).map(additionalKey -> additionalKey.getKeys().get(0)).toArray();
+
+        return Key.of("" + key, keys);
     }
 
     /**
