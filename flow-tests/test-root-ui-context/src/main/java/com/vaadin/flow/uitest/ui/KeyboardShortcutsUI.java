@@ -2,6 +2,7 @@ package com.vaadin.flow.uitest.ui;
 
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Input;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.internal.KeyboardEvent;
@@ -14,23 +15,36 @@ public class KeyboardShortcutsUI extends UI {
     protected void init(VaadinRequest request) {
         super.init(request);
 
-        Label label = new Label();
+        Div parent = new Div();
+        parent.getElement().setAttribute("style", "width:80%; height:80%; background-color:lightblue; ");
 
+        embed(parent, this, KeyShortcut.of('F', KeyModifier.META), true, false);
+
+        FocusableDiv focusableParent = new FocusableDiv();
+        focusableParent.setTabIndex(-1);
+        focusableParent.getElement().setAttribute("style", "width:100%; height:50%; background-color:lightgreen; ");
+
+        embed(focusableParent, parent, KeyShortcut.of('F', KeyModifier.META), true, true);
+
+        FocusableDiv focusableParent2 = new FocusableDiv();
+        focusableParent2.setTabIndex(-1);
+        focusableParent2.getElement().setAttribute("style", "width:100%; height:50%; background-color:pink; ");
+
+        embed(focusableParent2, focusableParent, KeyShortcut.of('F', KeyModifier.META), true, false);
+
+    }
+
+    private void embed(Div div, HasComponents parent, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation) {
+        Label label = new Label();
         Input input = new Input();
 
-        Div parent = new Div();
-//        FocusableDiv parent = new FocusableDiv();
-        parent.setWidth("50%");
-        parent.setHeight("50%");
-//        parent.setTabIndex(-1);
-//        parent.getElement().setAttribute("style", "background-color: lightblue; ");
+        div.add(input);
+        div.add(label);
 
-        parent.add(input);
-        parent.add(label);
+        parent.add(new Hr());
+        parent.add(div);
 
-        add(parent);
-
-        ComponentUtil.addShortcutListener(parent, KeyShortcut.of('F', KeyModifier.META), true, false, event -> {
+        ComponentUtil.addShortcutListener(div, shortcut, preventDefault, stopPropagation, event -> {
             label.setText(event.getKey().toString() + ", " + event.getModifiers());
         });
 
@@ -40,3 +54,4 @@ public class KeyboardShortcutsUI extends UI {
 class FocusableDiv extends Div implements Focusable<Div> {
 
 }
+
