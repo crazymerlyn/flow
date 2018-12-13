@@ -17,6 +17,18 @@ public class KeyboardShortcutsUI extends UI {
         Label label = new Label();
 
         Input input = new Input();
+
+        FocusableDiv parent = new FocusableDiv();
+        parent.setWidth("50%");
+        parent.setHeight("50%");
+//        parent.setTabIndex(0);
+//        parent.getElement().setAttribute("style", "background-color: lightblue; ");
+
+        parent.add(input);
+        parent.add(label);
+
+        add(parent);
+
 //        input.getElement().addEventListener("keydown", event -> {
 //            label.setText(event.getEventData().toJson());
 //        }).setFilter("event.key == 'f' && event.getModifierState('Meta')").addEventData("event.preventDefault()");
@@ -29,14 +41,18 @@ public class KeyboardShortcutsUI extends UI {
 //            label.setText(event.getEventData().toJson());
 //        }).setFilter("event.key == 'L'");
 //
-        Registration registration = ComponentUtil.addListener(this, KeyPressEvent.class, event -> {
+//        Registration registration = ComponentUtil.addListener(input, KeyPressEvent.class, event -> {
+//            label.setText(event.getKey().toString() + ", " + event.getModifiers());
+//        });
+
+        parent.addShortcutListener(event -> {
             label.setText(event.getKey().toString() + ", " + event.getModifiers());
-        });
-
-        input.addShortcutListener(event -> {}, true, false, 'f', Key.META);
+        }, true, false, 'f', Key.META);
 
 
-        add(input);
-        add(label);
     }
+}
+
+class FocusableDiv extends Div implements Focusable<Div> {
+
 }

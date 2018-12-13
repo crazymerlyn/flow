@@ -15,6 +15,7 @@
  */
 package com.vaadin.flow.component;
 
+import com.vaadin.flow.component.internal.KeyboardEvent;
 import com.vaadin.flow.dom.DomListenerRegistration;
 import com.vaadin.flow.shared.Registration;
 
@@ -131,34 +132,42 @@ public interface Focusable<T extends Component>
     }
 
 //    default Registration addShortcutListener(Key keySequence, boolean preventDefault, boolean stopPropagation, ComponentEventListener<KeyPressEvent> listener) {
-    default Registration addShortcutListener(ComponentEventListener<KeyPressEvent> listener, boolean preventDefault, boolean stopPropagation, char key, Key... modifiers) {
+    default Registration addShortcutListener(ComponentEventListener<KeyboardEvent> listener, boolean preventDefault, boolean stopPropagation, char key, Key... modifiers) {
 
         String modifierFilter = Arrays.stream(modifiers)
                 .map(modifier -> "event.getModifierState('" + modifier.getKeys().get(0) + "')")
                 .collect(Collectors.joining(" && "));
 
-
-//        ComponentUtil.addListener(this, KeyPressEvent.class, listener, domListenerRegistration -> {
-//
-//        });
-
         String filter = "event.key === '" + key + "'" +
                 " && " + (modifierFilter.isEmpty() ? "true" : modifierFilter);
 
-        DomListenerRegistration registration = getElement().addEventListener("keydown", event -> {
+        Registration registration = ComponentUtil.addListener((T)this, KeyDownEvent.class, event -> { listener.onComponentEvent(event); }, domListenerRegistration -> {
+            domListenerRegistration.setFilter(filter);
 
-            System.out.println(event.getEventData().toJson());
+            if (preventDefault) {
+                domListenerRegistration.addEventData("event.preventDefault()");
+            }
+            if (stopPropagation) {
+                domListenerRegistration.addEventData("event.stopPropagation()");
+            }
+        });
 
-//            listener.onComponentEvent(new KeyPressEvent());
-        }).setFilter(filter);
+        return registration;
 
-        if (preventDefault) {
-            registration.addEventData("event.preventDefault()");
-        }
-        if (stopPropagation) {
-            registration.addEventData("event.stopPropagation()");
-        }
-
-        return () -> registration.remove();
+//        DomListenerRegistration registration = getElement().addEventListener("keydown", event -> {
+//
+//            System.out.println(event.getEventData().toJson());
+//
+////            listener.onComponentEvent(new KeyPressEvent());
+//        }).setFilter(filter);
+//
+//        if (preventDefault) {
+//            registration.addEventData("event.preventDefault()");
+//        }
+//        if (stopPropagation) {
+//            registration.addEventData("event.stopPropagation()");
+//        }
+//
+//        return () -> registration.remove();
     }
 }
