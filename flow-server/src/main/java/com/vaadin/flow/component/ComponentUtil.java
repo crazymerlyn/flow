@@ -374,6 +374,8 @@ public class ComponentUtil {
                 domListenerConsumer);
     }
 
+    // TODO: Consider renaming it to addKeyboardListener
+    // TODO: Consider adding argument to make a layout focusable so it can automatically generate events, along with a separate API to do only that (no shortcut handling, only event triggering)
     public static Registration addShortcutListener(Component component, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, ComponentEventListener<KeyboardEvent> listener) {
 
         Registration registration = ComponentUtil.addListener(component, KeyDownEvent.class, event -> { listener.onComponentEvent(event); }, domListenerRegistration -> {

@@ -9,6 +9,8 @@ import java.util.stream.StreamSupport;
 
 public class KeyShortcut {
 
+    // TODO: Shall we name this KeySequence instead? Its use case is for shortcuts, but itself it's a sequence, unordered sequence.
+
     public static KeyShortcut of(char key, KeyModifier... modifiers) {
 
         Key[] keys = new Key[modifiers.length + 1];
