@@ -20,6 +20,10 @@ public class KeyShortcut {
         return new KeyShortcut(keys);
     }
 
+    public static KeyShortcut of(Key... keys) {
+        return new KeyShortcut(keys);
+    }
+
     private Set<Key> modifiers;
 
     private Set<Key> keys;

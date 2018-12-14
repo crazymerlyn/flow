@@ -374,10 +374,36 @@ public class ComponentUtil {
                 domListenerConsumer);
     }
 
-    // TODO: Consider renaming it to addKeyboardListener.
-    public static Registration addShortcutListener(Component component, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, ComponentEventListener<KeyboardEvent> listener) {
+    public static Registration addShortcut(KeyShortcut shortcut, Runnable callback) {
+        return ComponentUtil.addKeyboardListener(UI.getCurrent(), shortcut, callback);
+    }
 
-        Registration registration = ComponentUtil.addListener(component, KeyDownEvent.class, event -> { listener.onComponentEvent(event); }, domListenerRegistration -> {
+    public static Registration addShortcut(Component component, KeyShortcut shortcut, Runnable callback) {
+        return ComponentUtil.addKeyboardListener(component, shortcut, callback);
+    }
+
+    public static Registration addShortcut(Component component, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, Runnable callback) {
+        return ComponentUtil.addKeyboardListener(component, shortcut, preventDefault, stopPropagation, callback);
+    }
+
+    public static Registration addKeyboardListener(Component component, KeyShortcut shortcut, Runnable callback) {
+        return ComponentUtil.addKeyboardListener(component, shortcut, true, true, callback);
+    }
+
+    public static Registration addKeyboardListener(Component component, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, Runnable callback) {
+        return ComponentUtil.addKeyboardListener(component, shortcut, preventDefault, stopPropagation, event -> {
+            callback.run();
+        });
+    }
+
+    public static Registration addKeyboardListener(Component component, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, ComponentEventListener<KeyboardEvent> listener) {
+
+        Registration registration = ComponentUtil.addListener(component, KeyDownEvent.class, event -> {
+            System.out.println(event.getKey().getKeys().get(0) + ", " + event.getModifiers());
+            listener.onComponentEvent(event);
+
+            }, domListenerRegistration -> {
+
             domListenerRegistration.setFilter(shortcut.filterText());
 
             if (preventDefault) {
@@ -387,6 +413,10 @@ public class ComponentUtil {
                 domListenerRegistration.addEventData("event.stopPropagation()");
             }
         });
+
+        if (!(component instanceof Focusable)) {
+            ComponentUtil.makeFocusable(component);
+        }
 
         return registration;
     }
