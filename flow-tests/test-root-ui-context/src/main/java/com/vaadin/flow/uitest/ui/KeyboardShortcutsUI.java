@@ -20,15 +20,15 @@ public class KeyboardShortcutsUI extends UI {
 
         embed(parent, this, KeyShortcut.of('F', KeyModifier.META), true, false);
 
-        FocusableDiv focusableParent = new FocusableDiv();
-        focusableParent.setTabIndex(-1);
+        Div focusableParent = new Div();
         focusableParent.getElement().setAttribute("style", "width:100%; height:50%; background-color:lightgreen; ");
+        ComponentUtil.makeFocusable(focusableParent);
 
         embed(focusableParent, parent, KeyShortcut.of('F', KeyModifier.META), true, true);
 
-        FocusableDiv focusableParent2 = new FocusableDiv();
-        focusableParent2.setTabIndex(-1);
+        Div focusableParent2 = new Div();
         focusableParent2.getElement().setAttribute("style", "width:100%; height:50%; background-color:pink; ");
+        ComponentUtil.makeFocusable(focusableParent2);
 
         embed(focusableParent2, focusableParent, KeyShortcut.of('F', KeyModifier.META), true, false);
 
@@ -49,9 +49,6 @@ public class KeyboardShortcutsUI extends UI {
         });
 
     }
-}
-
-class FocusableDiv extends Div implements Focusable<Div> {
 
 }
 
