@@ -994,4 +994,30 @@ public class UI extends Component
     public <E> List<E> getNavigationListeners(Class<E> navigationHandler) {
         return internals.getNavigationListeners(navigationHandler);
     }
+
+    /**
+     * Adds a global shortcut to the current UI. These will be available through
+     * the applications life.
+     * <p>
+     *     Beware that the shortcuts will not necessarily trigger when the user
+     *     has focused a component, since the component might swallow the events
+     *     (especially input fields). If the user wants to make sure that the
+     *     components do not swallow the events, they'll need to use
+     *     sources of shortcuts. But this approach is dangerous for global
+     *     shortcuts since the components are not always available on the UI.
+     *     {@link Shortcut#withSources(Component...)} to register components as
+     * </p>
+     *<p>
+     *     NOTE:    does not currently handle registering the same shortcut
+     *              multiple times graceful.
+     *</p>
+     *
+     * @param shortcut  Shortcut configuration
+     * @param listener  Shortcut handler
+     * @return {@link Registration} for removing the shortcut
+     */
+    public Registration addShortcut(Shortcut shortcut,
+                                    ShortcutListener listener) {
+        return ShortcutUtil.addGlobalShortcut(getCurrent(), shortcut, listener);
+    }
 }

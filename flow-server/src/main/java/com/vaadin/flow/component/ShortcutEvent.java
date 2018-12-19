@@ -10,25 +10,29 @@
 
 package com.vaadin.flow.component;
 
+import java.util.Optional;
+
 import com.vaadin.flow.component.Shortcut.ShortcutConfiguration;
 
 public class ShortcutEvent {
     private ShortcutConfiguration configuration;
-    private ComponentEvent<? extends Component> componentEvent;
+    private ComponentEvent componentEvent;
 
+    public ShortcutEvent(ShortcutConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
     /**
      * Creates a new {@code ShortcutEvent} which ties {@link ShortcutConfiguration}
      * together with a {@link ComponentEvent} which is responsible for generating
      * this event.
-     * @param baseEvent     Event which caused the shortcut to be invoked
      * @param configuration ShortcutConfiguration detailing the exact shortcut
      *                      invoked
+     * @param baseEvent     Event which caused the shortcut to be invoked
      */
-    public ShortcutEvent(ComponentEvent<? extends Component> baseEvent,
-                         ShortcutConfiguration configuration) {
+    public ShortcutEvent(ShortcutConfiguration configuration, ComponentEvent<? extends Component> baseEvent) {
+        this(configuration);
         this.componentEvent = baseEvent;
-        this.configuration = configuration;
     }
 
     /**
@@ -43,7 +47,7 @@ public class ShortcutEvent {
         return configuration;
     }
 
-    public ComponentEvent<? extends Component> getEvent() {
-        return componentEvent;
+    public Optional<ComponentEvent> getEvent() {
+        return Optional.of(componentEvent);
     }
 }
