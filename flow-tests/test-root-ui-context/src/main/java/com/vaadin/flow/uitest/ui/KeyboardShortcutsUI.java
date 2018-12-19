@@ -16,28 +16,28 @@ public class KeyboardShortcutsUI extends UI {
         Div parent = new Div();
         parent.getElement().setAttribute("style", "width:80%; height:80%; background-color:lightblue; ");
 
-        embed(parent, this, KeyShortcut.of('F', KeyModifier.META), true, false, "1");
+        embed(parent, this, Shortcut.of('F', KeyModifier.META), true, false, "1");
 
         Div focusableParent = new Div();
         focusableParent.getElement().setAttribute("style", "width:100%; height:50%; background-color:lightgreen; ");
         ComponentUtil.makeFocusable(focusableParent);
 
-        embed(focusableParent, parent, KeyShortcut.of('F', KeyModifier.META), true, true, "2");
+        embed(focusableParent, parent, Shortcut.of('F', KeyModifier.META), true, true, "2");
 
         Div focusableParent2 = new Div();
         focusableParent2.getElement().setAttribute("style", "width:100%; height:50%; background-color:pink; ");
 //        ComponentUtil.makeFocusable(focusableParent2);
 
-        embed(focusableParent2, focusableParent, KeyShortcut.of('F', KeyModifier.META), false, false, "3");
+        embed(focusableParent2, focusableParent, Shortcut.of('F', KeyModifier.META), false, false, "3");
 
-        ComponentUtil.addShortcut(UI.getCurrent(), KeyShortcut.of('A'), true, true, this::crudView);
+        ComponentUtil.addShortcut(UI.getCurrent(), Shortcut.withKey('A'), true, true, this::crudView);
     }
 
     private void crudView() {
         System.out.println("!!! crudView");
     }
 
-    private void embed(Div div, HasComponents parent, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, String tag) {
+    private void embed(Div div, HasComponents parent, Shortcut shortcut, boolean preventDefault, boolean stopPropagation, String tag) {
         Label label = new Label();
         Input input = new Input();
 
