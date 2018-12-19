@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -23,7 +24,7 @@ public class Shortcut {
 
         Key[] keys = new Key[modifiers.length + 1];
         System.arraycopy(modifiers, 0, keys, 0, modifiers.length);
-        keys[modifiers.length] = Key.of("" + key);
+        keys[modifiers.length] = Key.of(("" + key).toUpperCase());
 
         return new Shortcut(keys);
     }
@@ -33,7 +34,7 @@ public class Shortcut {
     }
 
     public Shortcut withKey(char key) {
-        return withKey(Key.of("" + key));
+        return withKey(Key.of(("" + key).toUpperCase()));
     }
 
     public Shortcut withKey(Key key) {
@@ -62,18 +63,20 @@ public class Shortcut {
         configuration.updateKeyIdentifier();
     }
 
+    public Optional<HashSet<Component>> getSources() {
+        return Optional.of(sources);
+    }
+
     public ShortcutConfiguration getConfiguration() {
         // TODO: use copy constructor?
         return this.configuration;
     }
 
     String filterText() {
-        String modifierFilter = StreamSupport.stream(configuration.modifiers.spliterator(), false).map(modifier -> "event.getModifierState('" + modifier.getKeys().get(0) + "')").collect(Collectors.joining(" && "));
+        String modifierFilter = configuration.modifiers.stream().map(modifier -> "event.getModifierState('" + modifier.getKeys().get(0) + "')").collect(Collectors.joining(" && "));
 
-        String filter = "event.key.toLowerCase() == '" + configuration.keys.iterator().next().getKeys().get(0).toLowerCase() + "'" +
+        return "event.key.toLowerCase() == '" + configuration.keys.iterator().next().getKeys().get(0).toLowerCase() + "'" +
                 " && " + (modifierFilter.isEmpty() ? "true" : modifierFilter);
-
-        return filter;
     }
 
     public boolean getPreventDefault() {
