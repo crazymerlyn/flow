@@ -26,7 +26,7 @@ package com.vaadin.flow.component;
  */
 public interface Focusable<T extends Component>
         extends HasElement, BlurNotifier<T>, FocusNotifier<T>, HasEnabled,
-        HasShortcut {
+        ShortcutNotifier {
 
     /**
      * Sets the <code>tabindex</code> attribute in the component. The tabIndex
