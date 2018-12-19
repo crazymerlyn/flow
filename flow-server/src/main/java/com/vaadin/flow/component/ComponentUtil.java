@@ -374,29 +374,29 @@ public class ComponentUtil {
                 domListenerConsumer);
     }
 
-    public static Registration addShortcut(KeyShortcut shortcut, Runnable callback) {
+    public static Registration addShortcut(Shortcut shortcut, Runnable callback) {
         return ComponentUtil.addKeyboardListener(UI.getCurrent(), shortcut, callback);
     }
 
-    public static Registration addShortcut(Component component, KeyShortcut shortcut, Runnable callback) {
+    public static Registration addShortcut(Component component, Shortcut shortcut, Runnable callback) {
         return ComponentUtil.addKeyboardListener(component, shortcut, callback);
     }
 
-    public static Registration addShortcut(Component component, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, Runnable callback) {
+    public static Registration addShortcut(Component component, Shortcut shortcut, boolean preventDefault, boolean stopPropagation, Runnable callback) {
         return ComponentUtil.addKeyboardListener(component, shortcut, preventDefault, stopPropagation, callback);
     }
 
-    public static Registration addKeyboardListener(Component component, KeyShortcut shortcut, Runnable callback) {
+    public static Registration addKeyboardListener(Component component, Shortcut shortcut, Runnable callback) {
         return ComponentUtil.addKeyboardListener(component, shortcut, true, true, callback);
     }
 
-    public static Registration addKeyboardListener(Component component, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, Runnable callback) {
+    public static Registration addKeyboardListener(Component component, Shortcut shortcut, boolean preventDefault, boolean stopPropagation, Runnable callback) {
         return ComponentUtil.addKeyboardListener(component, shortcut, preventDefault, stopPropagation, event -> {
             callback.run();
         });
     }
 
-    public static Registration addKeyboardListener(Component component, KeyShortcut shortcut, boolean preventDefault, boolean stopPropagation, ComponentEventListener<KeyboardEvent> listener) {
+    public static Registration addKeyboardListener(Component component, Shortcut shortcut, boolean preventDefault, boolean stopPropagation, ComponentEventListener<KeyboardEvent> listener) {
 
         Registration registration = ComponentUtil.addListener(component, KeyDownEvent.class, event -> {
             System.out.println(event.getKey().getKeys().get(0) + ", " + event.getModifiers());
