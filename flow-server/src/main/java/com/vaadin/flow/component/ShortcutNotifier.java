@@ -14,28 +14,12 @@ import java.io.Serializable;
 
 import com.vaadin.flow.shared.Registration;
 
-public interface HasShortcut extends Serializable {
+public interface ShortcutNotifier extends Serializable {
     default Registration addShortcut(Shortcut shortcut,
                                      ShortcutListener listener) {
         if (this instanceof Component) {
-            return ComponentUtil.addListener(
-                    (Component) this,
-                    KeyDownEvent.class,
-                    event -> listener.onShortcut(
-                            new ShortcutEvent(event,
-                                    shortcut.getConfiguration())
-                    ),
-                    domListenerRegistration -> {
-                        domListenerRegistration.setFilter(shortcut.filterText());
-                        if (shortcut.getPreventDefault()) {
-                            domListenerRegistration
-                                    .addEventData("event.preventDefault()");
-                        }
-                        if (shortcut.getPreventBubbling()) {
-                            domListenerRegistration
-                                    .addEventData("event.stopPropagation()");
-                        }
-                    });
+            return ShortcutUtil.addShortcut((Component) this, shortcut,
+                    listener);
         }
          else {
             throw new IllegalStateException(String.format(
