@@ -16,6 +16,7 @@
 package com.vaadin.flow.component;
 
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 
 import com.vaadin.flow.shared.Registration;
 
@@ -50,5 +51,59 @@ public interface ClickNotifier<T extends Component> extends Serializable {
                     getClass().getName(), Component.class.getSimpleName(),
                     "addClickListener"));
         }
+    }
+
+    /**
+     * Adds a click listener to this component with a shortcut which invokes
+     * the click listener.
+     *
+     * @param listener
+     *            the listener to add, not <code>null</code>
+     * @param shortcut
+     *            the shortcut to add, not <code>null</code> and must have
+     *            <code>sources</code>.
+     * @return a handle that can be used for removing the listener
+     */
+    default Registration addClickListener(
+            ComponentEventListener<ClickEvent<T>> listener,
+            Shortcut shortcut) {
+
+        if (shortcut == null) {
+            throw new InvalidParameterException(String.format(
+                    "Parameter %s cannot be null.",
+                    Shortcut.class.getSimpleName()));
+        }
+
+        if (!(this instanceof Component)) {
+            throw new IllegalStateException(String.format(
+                    "The class '%s' doesn't extend '%s'. "
+                            + "Make your implementation for the method '%s'.",
+                    getClass().getName(), Component.class.getSimpleName(),
+                    "addClickListener"));
+        }
+
+        if (shortcut.getSources().isEmpty()) {
+            throw new InvalidParameterException(String.format(
+                    "Parameter %s does not have any sources configured. Cannot" +
+                            "register a %s for a click without sources.",
+                    Shortcut.class.getSimpleName(),
+                    Shortcut.class.getSimpleName()
+            ));
+        }
+
+        final Registration clickRegistration = ComponentUtil.addListener(
+                (Component) this, ClickEvent.class,
+                (ComponentEventListener) listener);
+
+        final Registration shortcutRegistration = ShortcutUtil.addShortcut(
+                (Component) this, shortcut,
+                event -> listener.onComponentEvent(new ClickEvent<>(
+                        (Component) this
+                )));
+
+        return () -> {
+            clickRegistration.remove();
+            shortcutRegistration.remove();
+        };
     }
 }
