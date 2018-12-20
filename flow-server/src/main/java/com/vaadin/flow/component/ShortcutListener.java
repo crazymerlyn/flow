@@ -10,7 +10,19 @@
 
 package com.vaadin.flow.component;
 
+import java.io.Serializable;
+
+/**
+ * Listener for Shortcut events
+ *
+ * @author Vaadin Ltd.
+ * @since
+ */
 @FunctionalInterface
-public interface ShortcutListener {
+public interface ShortcutListener extends Serializable {
+    /**
+     * Invoked when a shortcut event has been fired
+     * @param event {@link ShortcutEvent} data
+     */
     void onShortcut(ShortcutEvent event);
 }
