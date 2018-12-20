@@ -91,7 +91,7 @@ public class ShortcutUtil {
         if (shortcut.getPreventDefault()) {
             registration.addEventData("event.preventDefault()");
         }
-        if (shortcut.getPreventBubbling()) {
+        if (shortcut.getStopPropagation()) {
             registration.addEventData("event.stopPropagation()");
         }
     }

@@ -11,12 +11,31 @@
 package com.vaadin.flow.component;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.vaadin.flow.shared.Registration;
 
+/**
+ * A mixin interface for support catching shortcuts events that originate
+ * from themselves or their child components.
+ *
+ * @author Vaadin Ltd.
+ * @since
+ */
 public interface ShortcutNotifier extends Serializable {
-    default Registration addShortcut(Shortcut shortcut,
-                                     ShortcutListener listener) {
+
+    /**
+     * Add a {@link ShortcutListener} to this component, which will receive
+     * callbacks for the given {@link Shortcut}.
+     * @param shortcut  Shortcut for which to receive events. Must not be
+     *                  <code>null</code>.
+     * @param listener  The listener to register. Must not be <code>null</code>.
+     * @return {@link Registration} which can be used to remove the listener.
+     */
+    default Registration addShortcutListener(Shortcut shortcut,
+                                             ShortcutListener listener) {
+        Objects.requireNonNull(shortcut, "Parameter shortcut must not" +
+                "be null.");
         if (this instanceof Component) {
             return ShortcutUtil.addShortcut((Component) this, shortcut,
                     listener);
@@ -30,7 +49,17 @@ public interface ShortcutNotifier extends Serializable {
         }
     }
 
-    default Registration addShortcut(Shortcut shortcut, Runnable runnable) {
-        return addShortcut(shortcut, event -> runnable.run());
+    /**
+     * Add a {@link Runnable} to be executed when the given {@link Shortcut} is
+     * triggered.
+     * @param shortcut  Shortcut for which to receive events. Must not be
+     *                  <code>null</code>.
+     * @param runnable  A callback which is executed when the shortcut is
+     *                  triggered. Must not be <code>null</code>.
+     * @return {@link Registration} which can be used to remove the listener.
+     */
+    default Registration addShortcutListener(Shortcut shortcut,
+                                             Runnable runnable) {
+        return addShortcutListener(shortcut, event -> runnable.run());
     }
 }

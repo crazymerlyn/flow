@@ -10,14 +10,26 @@
 
 package com.vaadin.flow.component;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import com.vaadin.flow.component.Shortcut.ShortcutConfiguration;
 
-public class ShortcutEvent {
+/**
+ * Event for when a shortcut is triggered.
+ *
+ * @author Vaadin Ltd.
+ * @since
+ */
+public class ShortcutEvent implements Serializable {
     private ShortcutConfiguration configuration;
     private ComponentEvent componentEvent;
 
+    /**
+     * Creates a new shortcut event.
+     * @param configuration     {@link ShortcutConfiguration} which triggered
+     *                          the event
+     */
     public ShortcutEvent(ShortcutConfiguration configuration) {
         this.configuration = configuration;
     }
@@ -30,24 +42,35 @@ public class ShortcutEvent {
      *                      invoked
      * @param baseEvent     Event which caused the shortcut to be invoked
      */
-    public ShortcutEvent(ShortcutConfiguration configuration, ComponentEvent<? extends Component> baseEvent) {
+    public ShortcutEvent(ShortcutConfiguration configuration,
+                         ComponentEvent<? extends Component> baseEvent) {
         this(configuration);
         this.componentEvent = baseEvent;
     }
 
     /**
      * A shortcut for {@code ShortcutEvent.getEvent.getSource()}.
-     * @return  The component from which the shortcut originates from
+     * @return  The component from which the shortcut originates from, if available
      */
-    public Component source() {
-        return this.componentEvent.getSource();
+    public Optional<Component> source() {
+        return Optional.ofNullable(componentEvent == null
+                ? null
+                : componentEvent.getSource());
     }
 
+    /**
+     * Get the triggering {@link ShortcutConfiguration}.
+     * @return  Shortcut configuration
+     */
     public ShortcutConfiguration getConfiguration() {
         return configuration;
     }
 
+    /**
+     * Get the original {@link ComponentEvent} which triggered the shortcut
+     * @return  Original component event, if available
+     */
     public Optional<ComponentEvent> getEvent() {
-        return Optional.of(componentEvent);
+        return Optional.ofNullable(componentEvent);
     }
 }
