@@ -13,6 +13,7 @@ package com.vaadin.flow.component;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,14 +42,37 @@ public class ShortcutUtil {
      * @param listener      Handler for the shortcut event
      * @return {@link Registration} for unregistering the shortcut
      */
-    public static Registration addShortcut(Component component,
-                                           Shortcut shortcut,
-                                           ShortcutListener listener) {
+    public static Registration addShortcut(
+            Component component, Shortcut shortcut, ShortcutListener listener) {
         Set<Component> components = new HashSet<>(shortcut.getSources());
         components.add(component);
+
+        Objects.requireNonNull(component, "Component must not be null");
+        Objects.requireNonNull(shortcut, "Shortcut must not be null");
+        Objects.requireNonNull(listener, "Listener must not be null");
+
         final List<Registration> registrations = addShortcutToComponents(
                 shortcut, listener, components);
         return (Registration) () -> registrations.forEach(Registration::remove);
+    }
+
+    /**
+     * Registers a {@link Shortcut} handling for the given {@link Component}.
+     * When the component handles a shortcut, the given {@link Runnable}
+     * will be invoked.
+     * @param component <code>Component</code> which catches and, potentially,
+     *                  handles the shortcut
+     * @param shortcut  Shortcut settings
+     * @param runnable  Handler for the shortcut event
+     * @return {@link Registration} for unregistering the shortcut
+     */
+    public static Registration addShortcut(
+            Component component, Shortcut shortcut, Runnable runnable) {
+        Objects.requireNonNull(component, "Component must not be null");
+        Objects.requireNonNull(shortcut, "Shortcut must not be null");
+        Objects.requireNonNull(runnable, "Runnable must not be null");
+
+        return addShortcut(component, shortcut, e -> runnable.run());
     }
 
     private static List<Registration> addShortcutToComponents(

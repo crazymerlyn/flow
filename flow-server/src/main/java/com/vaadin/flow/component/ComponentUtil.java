@@ -404,7 +404,7 @@ public class ComponentUtil {
 
             }, domListenerRegistration -> {
 
-            domListenerRegistration.setFilter(shortcut.filterText());
+            domListenerRegistration.setFilter(shortcut.getConfiguration().filterText());
 
             if (preventDefault) {
                 domListenerRegistration.addEventData("event.preventDefault()");

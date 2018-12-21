@@ -30,7 +30,7 @@ public class KeyboardShortcutsUI extends UI {
 
         embed(focusableParent2, focusableParent, Shortcut.of('F', KeyModifier.META), false, false, "3");
 
-        ComponentUtil.addShortcut(UI.getCurrent(), Shortcut.withKey('A'), true, true, this::crudView);
+        ComponentUtil.addShortcut(UI.getCurrent(), Shortcut.of('A'), true, true, this::crudView);
     }
 
     private void crudView() {
