@@ -10,7 +10,11 @@
 
 package com.vaadin.flow.component;
 
-import java.util.Objects;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.dom.DomListenerRegistration;
 import com.vaadin.flow.dom.Element;
@@ -40,19 +44,33 @@ public class ShortcutUtil {
     public static Registration addShortcut(Component component,
                                            Shortcut shortcut,
                                            ShortcutListener listener) {
-        return ComponentUtil.addListener(
-                component,
-                KeyDownEvent.class,
-                event -> listener.onShortcut(
-                        new ShortcutEvent(shortcut.getConfiguration(), event
-                        )
-                ),
-                domListenerRegistration ->
-                        ShortcutUtil.primeDomEventRegistration(
-                                shortcut, domListenerRegistration));
+        Set<Component> components = new HashSet<>(shortcut.getSources());
+        components.add(component);
+        final List<Registration> registrations = addShortcutToComponents(
+                shortcut, listener, components);
+        return (Registration) () -> registrations.forEach(Registration::remove);
     }
 
-    public static Registration addGlobalShortcut(UI ui, Shortcut shortcut,
+    private static List<Registration> addShortcutToComponents(
+            Shortcut shortcut, ShortcutListener listener,
+            Collection<Component> components) {
+        assert shortcut != null : "Shortcut was null";
+        assert listener != null : "ShortcutListener was null";
+        assert components != null: "Components was null";
+
+        return components.stream()
+                .map(c -> addComponentShortcut(c, shortcut, listener))
+                .collect(Collectors.toList());
+    }
+
+    /*
+     *
+     * @param ui
+     * @param shortcut
+     * @param listener
+     * @return
+
+    private static Registration addGlobalShortcut(UI ui, Shortcut shortcut,
                                                  ShortcutListener listener) {
         Objects.requireNonNull(ui, "Parameter ui must not be null.");
         Objects.requireNonNull(shortcut, "Parameter shortcut must not" +
@@ -62,19 +80,22 @@ public class ShortcutUtil {
 
         return addElementShortcut(ui.getElement(), shortcut, listener);
     }
+     */
 
 
     /**
-     * Add a keyboard shortcut to an Element.
+     * Registers a {@link Shortcut} handling for the given {@link Element}.
+     * When the element handles a shortcut, the given {@link ShortcutListener}
+     * will be invoked.
      *
      * @param element   Listen for events on this Element and its children.
      * @param shortcut  Shortcut to be bound to the given element
      * @param listener  Shortcut listener
      * @return {@link Registration} for unregistering shortcut.
+     * @see ShortcutUtil#addShortcut(Component, Shortcut, ShortcutListener)
      */
-    private static Registration addElementShortcut(Element element,
-                                                   Shortcut shortcut,
-                                                   ShortcutListener listener) {
+    public static Registration addShortcut(
+            Element element, Shortcut shortcut, ShortcutListener listener) {
         DomListenerRegistration registration = element.addEventListener(
                 "keydown",
                 event -> listener.onShortcut(
@@ -82,12 +103,37 @@ public class ShortcutUtil {
 
         primeDomEventRegistration(shortcut, registration);
 
-        return registration;
+        final List<Registration> registrations = addShortcutToComponents(
+                shortcut, listener, shortcut.getSources());
+
+        return () -> {
+            registration.remove();
+            registrations.forEach(Registration::remove);
+        };
+    }
+
+    private static Registration addComponentShortcut(
+            Component component, Shortcut shortcut, ShortcutListener listener) {
+        assert component != null : "Component was null";
+        assert shortcut != null : "Shortcut was null";
+        assert listener != null : "ShortcutListener was null";
+        return ComponentUtil.addListener(
+                component,
+                KeyDownEvent.class,
+                event -> listener.onShortcut(
+                        new ShortcutEvent(shortcut.getConfiguration(), event)
+                ),
+                domListenerRegistration ->
+                        ShortcutUtil.primeDomEventRegistration(
+                                shortcut, domListenerRegistration));
     }
 
     private static void primeDomEventRegistration(
             Shortcut shortcut, DomListenerRegistration registration) {
-        registration.setFilter(shortcut.filterText());
+        assert shortcut != null : "Shortcut was null";
+        assert registration != null : "Registration was null";
+
+        registration.setFilter(shortcut.getConfiguration().filterText());
         if (shortcut.getPreventDefault()) {
             registration.addEventData("event.preventDefault()");
         }
