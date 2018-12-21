@@ -142,13 +142,6 @@ public class Shortcut implements Serializable {
         return this.configuration;
     }
 
-    String filterText() {
-        String modifierFilter = configuration.modifiers.stream().map(modifier -> "event.getModifierState('" + modifier.getKeys().get(0) + "')").collect(Collectors.joining(" && "));
-
-        return "event.key.toLowerCase() == '" + configuration.keys.iterator().next().getKeys().get(0).toLowerCase() + "'" +
-                " && " + (modifierFilter.isEmpty() ? "true" : modifierFilter);
-    }
-
     public boolean getPreventDefault() {
         return preventDefault;
     }
@@ -205,6 +198,13 @@ public class Shortcut implements Serializable {
                 return this.keySequenceId.equals(((ShortcutConfiguration)obj).keySequenceId);
             }
             return false;
+        }
+
+        String filterText() {
+            String modifierFilter = modifiers.stream().map(modifier -> "event.getModifierState('" + modifier.getKeys().get(0) + "')").collect(Collectors.joining(" && "));
+
+            return "event.key.toLowerCase() == '" + keys.iterator().next().getKeys().get(0).toLowerCase() + "'" +
+                    " && " + (modifierFilter.isEmpty() ? "true" : modifierFilter);
         }
     }
 

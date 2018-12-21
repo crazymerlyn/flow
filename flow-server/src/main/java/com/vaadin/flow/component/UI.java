@@ -1021,6 +1021,6 @@ public class UI extends Component
      */
     public Registration addShortcut(Shortcut shortcut,
                                     ShortcutListener listener) {
-        return ShortcutUtil.addGlobalShortcut(getCurrent(), shortcut, listener);
+        return ShortcutUtil.addShortcut(getCurrent(), shortcut, listener);
     }
 }
