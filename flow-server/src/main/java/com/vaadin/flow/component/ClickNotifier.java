@@ -82,7 +82,7 @@ public interface ClickNotifier<T extends Component> extends Serializable {
                     "addClickListener"));
         }
 
-        if (!shortcut.getSources().isEmpty()) {
+        if (shortcut.getSources().isEmpty()) {
             throw new InvalidParameterException(String.format(
                     "Parameter %s does not have any sources configured. Cannot" +
                             "register a %s for a click without sources.",

@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
  */
 public class Shortcut implements Serializable {
 
+    // set this to false if you want text fields to work when global shortcut
+    // is set - there is a bug where the filter is ignored for eventData
     private boolean preventDefault = true;
 
     private boolean stopPropagation = true;

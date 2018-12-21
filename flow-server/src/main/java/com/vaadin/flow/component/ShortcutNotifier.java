@@ -45,7 +45,7 @@ public interface ShortcutNotifier extends Serializable {
                     "The class '%s' doesn't extend '%s'. "
                             + "Make your implementation for the method '%s'.",
                     getClass().getName(), Component.class.getSimpleName(),
-                    "addShortcut"));
+                    "addShortcutListener(Shortcut, ShortcutListener)"));
         }
     }
 
@@ -60,6 +60,18 @@ public interface ShortcutNotifier extends Serializable {
      */
     default Registration addShortcutListener(Shortcut shortcut,
                                              Runnable runnable) {
-        return addShortcutListener(shortcut, event -> runnable.run());
+        Objects.requireNonNull(shortcut, "Parameter shortcut must not" +
+                "be null.");
+        if (this instanceof Component) {
+            return ShortcutUtil.addShortcut(
+                    (Component) this, shortcut, runnable);
+        }
+        else {
+            throw new IllegalStateException(String.format(
+                    "The class '%s' doesn't extend '%s'. "
+                            + "Make your implementation for the method '%s'.",
+                    getClass().getName(), Component.class.getSimpleName(),
+                    "addShortcutListener(Shortcut, Runnable)"));
+        }
     }
 }
