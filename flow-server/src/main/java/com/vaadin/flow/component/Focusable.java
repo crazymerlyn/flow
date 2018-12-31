@@ -15,6 +15,8 @@
  */
 package com.vaadin.flow.component;
 
+import com.vaadin.flow.shared.Registration;
+
 /**
  * Interface with the methods implemented by components that can gain and lose
  * focus.
@@ -123,6 +125,22 @@ public interface Focusable<T extends Component>
      */
     default void blur() {
         getElement().callFunction("blur");
+    }
+
+
+    /**
+     * Registers a shortcut which, when invoked moved focus to the focusable
+     * component.
+     *
+     * If it is expected that the shortcut can be invoked from places where
+     * preventing the default behaviour of the shortcut is needed, add those
+     * components as sources using {@link Shortcut#withSources(Component...)}
+     *
+     * @param shortcut  Shortcut which focuses this component
+     * @return  Registration information. Use to unregister shortcut.
+     */
+    default Registration addFocusShortcut(Shortcut shortcut) {
+        return UI.getCurrent().addShortcutListener(shortcut, this::focus);
     }
 
 }
