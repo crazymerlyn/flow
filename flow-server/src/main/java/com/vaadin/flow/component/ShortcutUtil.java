@@ -31,10 +31,6 @@ public class ShortcutUtil {
      * event event can be raised in the component's children. A common case
      * would be a form with multiple input fields. The form root will handle
      * the shortcut but it originates from one of the input fields.
-     * <p>
-     * In order to prevent the children from swallowing a potential shortcut,
-     * use {@link Shortcut#withSources(Component...)} to register components
-     * in which the shortcut can be invoked.
      *
      * @param component     <code>Component</code> which catches and, potentially,
      *                      handles the shortcut
@@ -44,16 +40,13 @@ public class ShortcutUtil {
      */
     public static Registration addShortcut(
             Component component, Shortcut shortcut, ShortcutListener listener) {
-        Set<Component> components = new HashSet<>(shortcut.getSources());
-        components.add(component);
 
         Objects.requireNonNull(component, "Component must not be null");
         Objects.requireNonNull(shortcut, "Shortcut must not be null");
         Objects.requireNonNull(listener, "Listener must not be null");
 
-        final List<Registration> registrations = addShortcutToComponents(
-                shortcut, listener, components);
-        return (Registration) () -> registrations.forEach(Registration::remove);
+        return addShortcutToComponent(
+                shortcut, listener, component);
     }
 
     /**
@@ -75,16 +68,14 @@ public class ShortcutUtil {
         return addShortcut(component, shortcut, e -> runnable.run());
     }
 
-    private static List<Registration> addShortcutToComponents(
+    private static Registration addShortcutToComponent(
             Shortcut shortcut, ShortcutListener listener,
-            Collection<Component> components) {
+            Component component) {
         assert shortcut != null : "Shortcut was null";
         assert listener != null : "ShortcutListener was null";
-        assert components != null: "Components was null";
+        assert component != null: "Component was null";
 
-        return components.stream()
-                .map(c -> addComponentShortcut(c, shortcut, listener))
-                .collect(Collectors.toList());
+        return addComponentShortcut(component, shortcut, listener);
     }
 
     /*
@@ -127,13 +118,7 @@ public class ShortcutUtil {
 
         primeDomEventRegistration(shortcut, registration);
 
-        final List<Registration> registrations = addShortcutToComponents(
-                shortcut, listener, shortcut.getSources());
-
-        return () -> {
-            registration.remove();
-            registrations.forEach(Registration::remove);
-        };
+        return registration;
     }
 
     private static Registration addComponentShortcut(
