@@ -40,8 +40,6 @@ public class Shortcut implements Serializable {
 
     private boolean stopPropagation = true;
 
-    private Set<Component> sources;
-
     private ShortcutConfiguration configuration = new ShortcutConfiguration();
 
     private Shortcut(Key... keys) {
@@ -124,19 +122,8 @@ public class Shortcut implements Serializable {
      *                      generation context.
      * @return this shortcut
      */
-    public Shortcut withSources(Component... components) {
-        this.sources = new HashSet<>(Arrays.asList(components));
-        return this;
-    }
-
-    /**
-     * A {@link Set} of {@link Component Components} considered as event
-     * sources. If no sources are configured, an empty set will be returned.
-     * @return Set of source components
-     */
-    public Set<Component> getSources() {
-        return sources == null ? Collections.emptySet()
-                : new HashSet<>(sources);
+    public ShortcutSource listenOn(Component... components) {
+        return new ShortcutSource(this, components);
     }
 
     public ShortcutConfiguration getConfiguration() {
