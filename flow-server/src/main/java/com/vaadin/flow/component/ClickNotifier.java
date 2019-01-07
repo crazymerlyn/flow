@@ -54,47 +54,13 @@ public interface ClickNotifier<T extends Component> extends Serializable {
     }
 
     /**
-     * Adds a click listener to this component with a shortcut which invokes
-     * the click listener.
+     * Adds a click shortcut to this component. Invocation of this shortcut
+     * will simulate a click on this component.
      *
-     * @param listener
-     *            the listener to add, not <code>null</code>
-     * @param shortcut
-     *            the shortcut to add, not <code>null</code> and must have
-     *            <code>sources</code>.
-     * @return a handle that can be used for removing the listener
+     * @return {@link ShortcutRegistration} used to configure the shortcut
      */
-    default Registration addClickListener(
-            ComponentEventListener<ClickEvent<T>> listener,
-            Shortcut shortcut) {
+    default ShortcutRegistration addClickShortcut() {
+        return ShortcutActions.click(this);
 
-        if (shortcut == null) {
-            throw new InvalidParameterException(String.format(
-                    "Parameter %s cannot be null.",
-                    Shortcut.class.getSimpleName()));
-        }
-
-        if (!(this instanceof Component)) {
-            throw new IllegalStateException(String.format(
-                    "The class '%s' doesn't extend '%s'. "
-                            + "Make your implementation for the method '%s'.",
-                    getClass().getName(), Component.class.getSimpleName(),
-                    "addClickListener"));
-        }
-
-        final Registration clickRegistration = ComponentUtil.addListener(
-                (Component) this, ClickEvent.class,
-                (ComponentEventListener) listener);
-
-        final Registration shortcutRegistration = ShortcutUtil.addShortcut(
-                (Component) this, shortcut,
-                event -> listener.onComponentEvent(new ClickEvent<>(
-                        (Component) this
-                )));
-
-        return () -> {
-            clickRegistration.remove();
-            shortcutRegistration.remove();
-        };
     }
 }

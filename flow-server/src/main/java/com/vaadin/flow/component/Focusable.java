@@ -27,8 +27,7 @@ import com.vaadin.flow.shared.Registration;
  * @see FocusNotifier
  */
 public interface Focusable<T extends Component>
-        extends HasElement, BlurNotifier<T>, FocusNotifier<T>, HasEnabled,
-        ShortcutNotifier {
+        extends HasElement, BlurNotifier<T>, FocusNotifier<T>, HasEnabled {
 
     /**
      * Sets the <code>tabindex</code> attribute in the component. The tabIndex
@@ -129,18 +128,16 @@ public interface Focusable<T extends Component>
 
 
     /**
-     * Registers a shortcut which, when invoked moved focus to the focusable
+     * Registers a shortcut which, when invoked moves focus to the focusable
      * component.
      *
-     * If it is expected that the shortcut can be invoked from places where
-     * preventing the default behaviour of the shortcut is needed, add those
-     * components as sources using {@link Shortcut#withSources(Component...)}
+     * Use the {@link ShortcutRegistration} to configure the shortcut properties
+     * such as keys used to invoke the shortcut.
      *
-     * @param shortcut  Shortcut which focuses this component
-     * @return  Registration information. Use to unregister shortcut.
+     * @return <code>ShortcutRegistration</code> for configuring the shortcut.
      */
-    default Registration addFocusShortcut(Shortcut shortcut) {
-        return UI.getCurrent().addShortcutListener(shortcut, this::focus);
+    default ShortcutRegistration addFocusShortcut() {
+        return ShortcutActions.focus(this);
     }
 
 }

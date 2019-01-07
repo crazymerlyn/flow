@@ -13,7 +13,7 @@ package com.vaadin.flow.component;
 import java.io.Serializable;
 import java.util.Optional;
 
-import com.vaadin.flow.component.Shortcut.ShortcutConfiguration;
+import com.vaadin.flow.component.ShortcutRegistration.ShortcutConfiguration;
 
 /**
  * Event for when a shortcut is triggered.
