@@ -87,7 +87,7 @@ import com.vaadin.flow.theme.ThemeUtil;
  *
  */
 public class UI extends Component
-        implements PollNotifier, HasComponents, RouterLayout, ShortcutNotifier {
+        implements PollNotifier, HasComponents, RouterLayout {
 
     private static final String NULL_LISTENER = "Listener can not be 'null'";
 

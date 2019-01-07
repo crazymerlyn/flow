@@ -2,6 +2,7 @@ package com.vaadin.flow.component;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -169,8 +170,8 @@ public class ShortcutRegistration implements Registration, Serializable {
 
         markDirty();
 
-        for (ComponentRegistration scopeRegistration : scopeRegistrations) {
-            scopeRegistration.clear();
+        if (scopeRegistrations != null) {
+            scopeRegistrations.forEach(ComponentRegistration::clear);
         }
 
         scopeRegistrations = new HashSet<>(moreScopes.length + 1);
@@ -494,6 +495,7 @@ public class ShortcutRegistration implements Registration, Serializable {
      */
     private static class HashableKey implements Key {
         private Key key;
+        private Integer hashcode;
 
         HashableKey(Key key) {
             assert key != null;
@@ -503,7 +505,14 @@ public class ShortcutRegistration implements Registration, Serializable {
 
         @Override
         public int hashCode() {
-            return Arrays.hashCode(key.getKeys().toArray(String[]::new));
+            if (hashcode == null) {
+                hashcode = Arrays.hashCode(key.getKeys().stream()
+                        .map(String::toLowerCase)
+                        .sorted(String::compareTo)
+                        .toArray(String[]::new));
+            }
+
+            return hashcode;
         }
 
         @Override

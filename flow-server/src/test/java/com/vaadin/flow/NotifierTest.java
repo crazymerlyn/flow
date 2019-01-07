@@ -23,10 +23,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.CompositionNotifier;
 import com.vaadin.flow.component.FocusNotifier;
 import com.vaadin.flow.component.InputNotifier;
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyNotifier;
-import com.vaadin.flow.component.Shortcut;
-import com.vaadin.flow.component.ShortcutNotifier;
 import com.vaadin.flow.component.Tag;
 
 public class NotifierTest {
@@ -34,8 +31,7 @@ public class NotifierTest {
     public static class NotifierComponent extends Component
             implements BlurNotifier<NotifierComponent>,
             ClickNotifier<NotifierComponent>, CompositionNotifier,
-            FocusNotifier<NotifierComponent>, InputNotifier, KeyNotifier,
-            ShortcutNotifier {
+            FocusNotifier<NotifierComponent>, InputNotifier, KeyNotifier {
     }
 
     @Test
@@ -53,8 +49,6 @@ public class NotifierTest {
         component.addKeyDownListener(event -> ignore());
         component.addKeyUpListener(event -> ignore());
         component.addKeyPressListener(event -> ignore());
-        component.addShortcutListener(Shortcut.of(Key.ENTER),
-                event -> ignore());
     }
 
     private static void ignore() {
