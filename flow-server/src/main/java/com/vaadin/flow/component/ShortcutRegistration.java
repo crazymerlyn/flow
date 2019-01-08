@@ -32,7 +32,7 @@ public class ShortcutRegistration implements Registration, Serializable {
 
     private ComponentRegistration ownerRegistration;
     private StateTree.ExecutionRegistration executionRegistration;
-    private Set<ComponentRegistration> scopeRegistrations;
+    private Set<ComponentRegistration> scopeRegistrations = new HashSet<>(2);
 
     private AtomicBoolean isDirty = new AtomicBoolean(false);
 
@@ -170,9 +170,7 @@ public class ShortcutRegistration implements Registration, Serializable {
 
         markDirty();
 
-        if (scopeRegistrations != null) {
-            scopeRegistrations.forEach(ComponentRegistration::clear);
-        }
+        scopeRegistrations.forEach(ComponentRegistration::clear);
 
         scopeRegistrations = new HashSet<>(moreScopes.length + 1);
 
