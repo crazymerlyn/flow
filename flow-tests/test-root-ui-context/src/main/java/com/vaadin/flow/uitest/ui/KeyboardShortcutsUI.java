@@ -16,28 +16,30 @@ public class KeyboardShortcutsUI extends UI {
         Div parent = new Div();
         parent.getElement().setAttribute("style", "width:80%; height:80%; background-color:lightblue; ");
 
-        embed(parent, this, ShortcutRegistration.of('F', KeyModifier.META), true, false, "1");
+        embed(parent, this, "1").alt().on('F').preventDefault();
 
         Div focusableParent = new Div();
         focusableParent.getElement().setAttribute("style", "width:100%; height:50%; background-color:lightgreen; ");
         ComponentUtil.makeFocusable(focusableParent);
 
-        embed(focusableParent, parent, ShortcutRegistration.of('F', KeyModifier.META), true, true, "2");
+        embed(focusableParent, parent, "2").alt().on('F').preventDefault()
+                .stopPropagation();
 
         Div focusableParent2 = new Div();
         focusableParent2.getElement().setAttribute("style", "width:100%; height:50%; background-color:pink; ");
 //        ComponentUtil.makeFocusable(focusableParent2);
 
-        embed(focusableParent2, focusableParent, ShortcutRegistration.of('F', KeyModifier.META), false, false, "3");
+        embed(focusableParent2, focusableParent, "3").alt().on('F');
 
-        ComponentUtil.addShortcut(UI.getCurrent(), ShortcutRegistration.of('A'), true, true, this::crudView);
+        ShortcutActions.exec(this::crudView).on('A').stopPropagation()
+                .preventDefault();
     }
 
     private void crudView() {
         System.out.println("!!! crudView");
     }
 
-    private void embed(Div div, HasComponents parent, ShortcutRegistration shortcut, boolean preventDefault, boolean stopPropagation, String tag) {
+    private ShortcutRegistration embed(Div div, HasComponents parent, String tag) {
         Label label = new Label();
         Input input = new Input();
 
@@ -46,6 +48,17 @@ public class KeyboardShortcutsUI extends UI {
 
         parent.add(new Hr());
         parent.add(div);
+
+        ComponentUtil.addListener(div, KeyDownEvent.class, event -> {
+            String message = tag + ": " + event.getKey().getKeys().get(0) + ", " + event.getModifiers();
+            System.out.println(message);
+            label.setText(message);
+        });
+
+        return ShortcutActions.exec(
+                () -> System.out.println(
+                        "Shortcut for tag " + tag + " invoked!"),
+                div);
 
 //        ComponentUtil.addKeyboardListener(div, shortcut, preventDefault, stopPropagation, event -> {
 //            String message = tag + ": " + event.getKey().getKeys().get(0).toString() + ", " + event.getModifiers();
