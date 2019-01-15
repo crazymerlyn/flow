@@ -339,21 +339,21 @@ public class UI extends Component
     /**
      * Locks the session of this UI and runs the provided command right away.
      * <p>
-     * It is generally recommended to use {@link #access(Command)} instead of
+     * It is generally recommended to use {@link #access(com.vaadin.flow.server.Command)} instead of
      * this method for accessing a session from a different thread as
-     * {@link #access(Command)} can be used while holding the lock of another
+     * {@link #access(com.vaadin.flow.server.Command)} can be used while holding the lock of another
      * session. To avoid causing deadlocks, this methods throws an exception if
      * it is detected than another session is also locked by the current thread.
      * <p>
-     * This method behaves differently than {@link #access(Command)} in some
+     * This method behaves differently than {@link #access(com.vaadin.flow.server.Command)} in some
      * situations:
      * <ul>
      * <li>If the current thread is currently holding the lock of the session,
-     * {@link #accessSynchronously(Command)} runs the task right away whereas
-     * {@link #access(Command)} defers the task to a later point in time.</li>
+     * {@link #accessSynchronously(com.vaadin.flow.server.Command)} runs the task right away whereas
+     * {@link #access(com.vaadin.flow.server.Command)} defers the task to a later point in time.</li>
      * <li>If some other thread is currently holding the lock for the session,
-     * {@link #accessSynchronously(Command)} blocks while waiting for the lock
-     * to be available whereas {@link #access(Command)} defers the task to a
+     * {@link #accessSynchronously(com.vaadin.flow.server.Command)} blocks while waiting for the lock
+     * to be available whereas {@link #access(com.vaadin.flow.server.Command)} defers the task to a
      * later point in time.</li>
      * </ul>
      *
@@ -366,10 +366,10 @@ public class UI extends Component
      * @throws IllegalStateException
      *             if the current thread holds the lock for another session
      *
-     * @see #access(Command)
-     * @see VaadinSession#accessSynchronously(Command)
+     * @see #access(com.vaadin.flow.server.Command)
+     * @see VaadinSession#accessSynchronously(com.vaadin.flow.server.Command)
      */
-    public void accessSynchronously(Command command)
+    public void accessSynchronously(com.vaadin.flow.server.Command command)
             throws UIDetachedException {
         // null detach handler -> throw UIDetachEvent
         accessSynchronously(command, null);
@@ -389,7 +389,7 @@ public class UI extends Component
      * while allowing new APIs to use newer conventions.
      */
     private void accessSynchronously(Command command,
-            SerializableRunnable detachHandler) {
+                                     SerializableRunnable detachHandler) {
 
         Map<Class<?>, CurrentInstance> old = null;
 
@@ -451,8 +451,8 @@ public class UI extends Component
      * </p>
      *
      * @see #getCurrent()
-     * @see #accessSynchronously(Command)
-     * @see VaadinSession#access(Command)
+     * @see #accessSynchronously(com.vaadin.flow.server.Command)
+     * @see VaadinSession#access(com.vaadin.flow.server.Command)
      * @see VaadinSession#lock()
      *
      *
@@ -464,7 +464,7 @@ public class UI extends Component
      * @return a future that can be used to check for task completion and to
      *         cancel the task
      */
-    public Future<Void> access(final Command command) {
+    public Future<Void> access(final com.vaadin.flow.server.Command command) {
         // null detach handler -> throw UIDetachEvent
         return access(command, null);
     }
@@ -475,7 +475,7 @@ public class UI extends Component
      * while allowing new APIs to use newer conventions.
      */
     private Future<Void> access(Command command,
-            SerializableRunnable detachHandler) {
+                                SerializableRunnable detachHandler) {
         VaadinSession session = getSession();
 
         if (session == null) {
@@ -526,8 +526,8 @@ public class UI extends Component
      * @return a runnable that will run either the access task or the detach
      *         handler, possibly asynchronously
      */
-    public SerializableRunnable accessLater(SerializableRunnable accessTask,
-            SerializableRunnable detachHandler) {
+    public Command accessLater(SerializableRunnable accessTask,
+                               SerializableRunnable detachHandler) {
         Objects.requireNonNull(accessTask, "Access task cannot be null");
 
         return () -> access(accessTask::run, detachHandler);
@@ -614,7 +614,7 @@ public class UI extends Component
      * method. It is also recommended that {@link UI#getCurrent()} is set up to
      * return this UI since writing the response may invoke logic in any
      * attached component or extension. The recommended way of fulfilling these
-     * conditions is to use {@link #access(Command)}.
+     * conditions is to use {@link #access(com.vaadin.flow.server.Command)}.
      *
      * @throws IllegalStateException
      *             if push is disabled.
@@ -997,5 +997,21 @@ public class UI extends Component
      */
     public <E> List<E> getNavigationListeners(Class<E> navigationHandler) {
         return internals.getNavigationListeners(navigationHandler);
+    }
+
+    public Registration addShortcut(Command command, Key key, KeyModifier... keyModifiers) {
+        return Shortcuts.addShortcut(this, command, key, keyModifiers);
+    }
+
+    public Registration addShortcut(Command command, char character, KeyModifier... keyModifiers) {
+        return Shortcuts.addShortcut(this, command, character, keyModifiers);
+    }
+
+    public ShortcutRegistration ShortcutRegistration(Command command, Key key) {
+        return Shortcuts.registerShortcut(this, command, key);
+    }
+
+    public ShortcutRegistration ShortcutRegistration(Command command, char character) {
+        return Shortcuts.registerShortcut(this, command, character);
     }
 }
